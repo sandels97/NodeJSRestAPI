@@ -46,7 +46,7 @@ app.post("/api/v1/pois", function (req, res) {
     }
 })
 
-app.post("/api/v1/pois/:id", function (req, res) {
+app.put("/api/v1/pois/:id", function (req, res) {
     
     try {
         
@@ -62,7 +62,17 @@ app.post("/api/v1/pois/:id", function (req, res) {
     }
 })
 
-
+app.delete("/api/v1/pois/:id", function (req, res) {
+    let poi = db.getPoi(req.params.id)
+    
+    res.setHeader('Content-Type', 'application/json');
+    if(poi) {
+        db.deletePoi(req.params.id)
+        res.status(204).send({ message: "Poistettu"})
+    } else {
+        res.status(404).send({ error: "Id:tä' ei ole"})
+    }
+})
 
 app.listen(port, () => 
 console.log(`Express app listening on port ${port}!`))
