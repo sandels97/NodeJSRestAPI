@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({
 
 app.get("/api/v1/pois", pois)
 app.get("/api/v1/pois/:id", pois)
-app.post("/api/v1/pois/:id", auth.authenticate, pois)
+app.post("/api/v1/pois", auth.authenticate, pois)
 app.put("/api/v1/pois/:id", auth.authenticate, pois)
 app.delete("/api/v1/pois/:id", auth.authenticate, pois)
 

@@ -5,13 +5,13 @@ const router = express.Router();
 const db = require("../db.js");
 const Poi = require('../poi.js').Poi
 
-router.get("*/", function (req, res) {
+router.get("/api/v1/pois", function (req, res) {
     let pois = db.getPoi()
     res.setHeader('Content-Type', 'application/json');
     res.status(200).send(pois)
 })
 
-router.get("*/:id/", function (req, res) {
+router.get("/api/v1/pois/:id/", function (req, res) {
     let pois = db.getPoi(req.params.id)
     
     if(pois) {
