@@ -1,6 +1,9 @@
 const express = require("express");
 const morgan = require("morgan");
 const db = require("./db.js")
+const bodyParser = require('body-parser')
+
+const Poi = require('./poi.js').Poi
 
 const app = express()
 const port = 3000
@@ -8,16 +11,18 @@ const port = 3000
 app.use("/", express.static('public'))
 app.use(morgan('dev'))
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: true}))
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 
-app.get("/pois", function (req, res) {
+app.get("/api/v1/pois", function (req, res) {
     let pois = db.getPoi()
     res.setHeader('Content-Type', 'application/json');
     res.status(200).send(pois)
 })
 
-app.get("/pois/:id", function (req, res) {
+app.get("/api/v1/pois/:id", function (req, res) {
     let pois = db.getPoi(req.params.id)
     
     if(pois) {
@@ -28,6 +33,36 @@ app.get("/pois/:id", function (req, res) {
     }
 
 })
+
+app.post("/api/v1/pois", function (req, res) {
+    
+    try {
+        let poi = new Poi(req.body.name, req.body.description, req.body.city, req.body.coordinates)
+        let pois = db.setPoi(undefined, poi)
+        res.setHeader('Content-Type', 'application/json');
+        res.status(201).send(pois)
+    } catch (e) {
+        res.status(400).send({ error: "POI-tiedot virheelliset"})
+    }
+})
+
+app.post("/api/v1/pois/:id", function (req, res) {
+    
+    try {
+        
+        let poiExists = db.getPoi(req.params.id)
+        let statusCode = poiExists ? 200 : 201
+        
+        let poi = new Poi(req.body.name, req.body.description, req.body.city, req.body.coordinates)
+        let pois = db.setPoi(req.params.id, poi)
+        res.setHeader('Content-Type', 'application/json');
+        res.status(statusCode).send(pois)
+    } catch (e) {
+        res.status(400).send({ error: "POI-tiedot virheelliset"})
+    }
+})
+
+
 
 app.listen(port, () => 
 console.log(`Express app listening on port ${port}!`))
